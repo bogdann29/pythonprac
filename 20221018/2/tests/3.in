@@ -1,0 +1,7 @@
+:print print()
+:max x y e z max(x,y,e,z)
+print
+max 6 7 2 3
+print
+max 'a' 'b' 'c' 'd'
+quit "{}, {}"

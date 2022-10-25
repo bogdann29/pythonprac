@@ -1,1 +1,1 @@
-"l", "abcdfghklmoprsz"
+print(bin_search("l", "abcdfghklmoprsz"))

@@ -7,4 +7,6 @@ def Pareto(*pairs):
 	res = [p for p in pairs if all([not dominate(p,x) for x in pairs])]
 	return tuple(res)
 
-print(Pareto(*eval(input())))
+import sys
+exec(sys.stdin.read())
+

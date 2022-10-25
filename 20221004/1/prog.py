@@ -8,5 +8,5 @@ def bin_search(elem, seq):
 		return bin_search(elem, seq[:(ln-1)//2])
 	return bin_search(elem, seq[(ln-1)//2 + 1:])
 
-el, s = eval(input())
-print(bin_search(el,s))
+import sys
+exec(sys.stdin.read())

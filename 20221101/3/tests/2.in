@@ -1,0 +1,9 @@
+f, g = Grange(1, 1, 1), Grange(10, 2, 21)
+o = Grange(100, 10, 200)
+print(f"{f=}, {g=}")
+print(f"{list(o)}({not(o)})")
+print(f"{len(f)=}, {len(g)=}")
+print(f"{len(list(f))=}, {len(list(g))=}, {len(list(o))=}")
+print(f"{g[0]=}, {o[11]=}")
+a = g[3:32767]
+print(f"{a=}, {a[5]=}")

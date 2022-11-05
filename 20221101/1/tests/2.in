@@ -1,0 +1,7 @@
+o = Omnibus()
+o.a = 18
+print(o.a)
+del o.a
+print(o.a)
+del o.a
+print(o.a)

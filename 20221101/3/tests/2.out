@@ -1,0 +1,6 @@
+f=grange(1, 1, 1), g=grange(10, 2, 21)
+[100](False)
+len(f)=0, len(g)=2
+len(list(f))=0, len(list(g))=2, len(list(o))=1
+g[0]=10, o[11]=10000000000000
+a=grange(3, 2, 32767), a[5]=96

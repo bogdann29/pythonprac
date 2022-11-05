@@ -1,0 +1,5 @@
+a = Triangle((0,0), (1,0), (0, 100))
+b = Triangle((0,0), (-1, 7), (0, -100))
+print(a in a, a & a, a > a)
+print(a in b, b in a, a & b, b & a, a > b, b > a)
+print(b in b, b & b, b > b)

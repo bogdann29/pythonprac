@@ -1,0 +1,11 @@
+a, b = Omnibus(), Omnibus()
+try:
+    print(a.b)
+except AttributeError:
+    print('error')
+a.b = 5
+print(a.b)
+b.a = 5
+a.a = 's'
+print(b.a)
+print(a.a)

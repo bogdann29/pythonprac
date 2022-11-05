@@ -1,0 +1,5 @@
+t1 = Triangle((0, 0), (0, 0), (0, 0))
+t2 = Triangle((0, 6), (9, 1), (5, 2))
+print(t1 in t2, abs(t1), abs(t2))
+print(bool(t1), bool(t2))
+print(t1 < t2, t2 < t1, t1 & t2)

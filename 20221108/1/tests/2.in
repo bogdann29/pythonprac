@@ -1,0 +1,7 @@
+a = DivStr("bobao")
+b = DivStr()
+print(b%2)
+print(a % 4)
+print(* a % 6)
+print(a % 5)
+print(* a // 5)

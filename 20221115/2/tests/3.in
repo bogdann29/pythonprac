@@ -1,0 +1,9 @@
+class A:
+  num = Num()
+print(A().num)
+b, d = A(), A()
+b.num = 'jsfhahg'
+d.num = -5 
+print(b.num*d.num)
+b.num = [1] * 10
+print(d.num + b.num)

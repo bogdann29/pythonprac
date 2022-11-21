@@ -1,0 +1,9 @@
+@objcount
+class A:
+    counter = 4
+
+b, c, d = A(), A(), A()
+print(A.counter)
+print(b.counter, c.counter, d.counter)
+b = c = d
+print(A.counter, d.counter)

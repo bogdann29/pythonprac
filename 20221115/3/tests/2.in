@@ -1,0 +1,14 @@
+alp = Alpha(c=10, z=2, a=42)
+alp.e = 123
+print(alp)
+try:
+	alp.f1 = 15
+except AttributeError:
+	print('error')
+alq = AlphaQ(c=10, z=2, a=42)
+alq.e = 123
+print(alq)
+try:
+	alq.f1 = 15
+except AttributeError:
+	print('error')

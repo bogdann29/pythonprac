@@ -1,0 +1,44 @@
+from time import time
+
+cur = time()
+alp = Alpha(c=10, z=2, a=42, b='qw', d =[7217109,21791,1589,'218'])
+alp.e = -214
+for a in alp.d:
+	print(a*4)
+print(alp)
+
+for c in [chr(i) for i in range(ord('a'), ord('z') + 1)]:
+	size = 128000
+	l = []
+	for i in range(size):
+		l.append(i)
+	setattr(alp, c, l)
+
+s = 0
+for c in [chr(i) for i in range(ord('a'), ord('z') + 1)]:
+	s += sum(getattr(alp, c))
+print(s)
+
+t1 = time() - cur
+
+cur = time()
+alq = AlphaQ(c=10, z=2, a=42, b='qw', d =[7217109,21791,1589,'218'])
+alq.e = -214
+for a in alq.d:
+	print(a*4)
+print(alq)
+
+
+for c in [chr(i) for i in range(ord('a'), ord('z') + 1)]:
+	size = 128000
+	l = []
+	for i in range(size):
+		l.append(i)
+	setattr(alq, c, l)
+
+s = 0
+for c in [chr(i) for i in range(ord('a'), ord('z') + 1)]:
+	s += sum(getattr(alq, c))
+print(s)
+t2 = time() - cur
+#print(t2 > t1)

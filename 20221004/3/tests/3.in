@@ -1,1 +1,1 @@
-print(subtraction(["Q", "WE", "RTY"], ["WE", "ZZ"]))
+["Q", "WE", "RTY"], ["WE", "ZZ"]

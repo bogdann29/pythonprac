@@ -1,1 +1,1 @@
-print(bin_search(6, range(3,18,2)))
+6, range(3,18,2)

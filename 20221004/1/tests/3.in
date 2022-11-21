@@ -1,1 +1,1 @@
-print(bin_search("l", "abcdfghklmoprsz"))
+"l", "abcdfghklmoprsz"

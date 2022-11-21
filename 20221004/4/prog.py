@@ -6,6 +6,6 @@ def calc(s, t, u):
 	f = lambda x, y: eval(u)
 	return lambda s: f(x(s), y(s))
 
-import sys
-exec(sys.stdin.read())
+F = calc(*eval(input()))
+print(F(eval(input())))
 

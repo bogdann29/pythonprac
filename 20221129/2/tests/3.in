@@ -1,0 +1,5 @@
+class A(metaclass=check):
+    pass
+
+a = A()
+print(a.check_annotations())

@@ -1,0 +1,11 @@
+class A(metaclass=dump):
+    def __init__(self, val=5):
+        self.val = val * 2
+
+class B(A):
+    def print(self, b):
+        print(b ** 2)
+
+
+a = B(val=7)
+a.print(1)

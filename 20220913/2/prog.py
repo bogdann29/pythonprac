@@ -1,1 +1,1 @@
-print(sorted(eval(input())))
+print(*sorted(eval(input())), sep=', ')

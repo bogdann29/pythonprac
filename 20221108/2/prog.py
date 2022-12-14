@@ -29,10 +29,10 @@ while True:
     try:
         sq = triangleSquare(input())
     except InvalidInput:
-        print("InvalidInput")
+        print("Invalid Input")
     except BadTriangle:
         print("Not a triangle")
     else:
-        print(sq)
+        print("%.2f"%sq)
         break
 

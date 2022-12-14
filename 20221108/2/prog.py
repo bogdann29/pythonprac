@@ -29,7 +29,7 @@ while True:
     try:
         sq = triangleSquare(input())
     except InvalidInput:
-        print("Invalid Input")
+        print("Invalid input")
     except BadTriangle:
         print("Not a triangle")
     else:

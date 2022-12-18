@@ -3,9 +3,10 @@ def dist(c1, c2):
 
 
 def f(self, other):
-        if self.sq == 0 or other.sq == 0:
+        if self.sq == 0 or other.sq == 0 or not self.exist or not other.exist:
             return False
-        
+        if self is other:
+        	return True
         l = [(other.x1, other.y1), (other.x2, other.y2),(other.x3, other.y3)] 
         res = []
         for el in l:
@@ -43,9 +44,14 @@ class Triangle():
     def __lt__(self, other):
         return self.sq < other.sq
     
+    def __gt__(self, other):
+    	return self.sq > other.sq
+    	
     def __contains__(self, other):
-        if other.sq == 0:
+        if other.sq == 0 or self.sq == 0 and other.sq == 0:
             return True
+        if self is other:
+        	return False
         l = [(other.x1, other.y1), (other.x2, other.y2),(other.x3, other.y3)] 
         res = []
         for el in l:

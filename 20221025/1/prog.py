@@ -1,4 +1,4 @@
-def fib(n, m):
+def fib(m, n):
 	n1, n2 = 0, 1
 	if m == 0:
 		yield 1
@@ -6,7 +6,7 @@ def fib(n, m):
 		t = n1 + n2
 		n1 = n2
 		n2 = t
-		if i >= m-1:
+		if i >= m:
 			yield n2
 
 import sys

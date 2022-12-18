@@ -6,7 +6,7 @@ for a in alp.d:
 	print(a*4)
 print(alp)
 for c in [chr(i) for i in range(ord('a'), ord('z') + 1)]:
-	size = 128000
+	size = 100
 	l = []
 	for i in range(size):
 		l.append(i)

@@ -47,8 +47,18 @@ def tree(tree_hash):
         print(obj_type, obj_num, obj_name.decode())
 
 
-branch_name = '../../.git/refs/heads/' + input()
+def history_tree(hash):
+    data = commit(hash)
+    print('\nTREE for commit', hash)
+    tree(data[0].split()[1])
+    if data[1].split()[0] == 'parent':
+        try:
+            history_tree(data[1].split()[1])
+        except Exception:
+            pass
 
+
+branch_name = '../../.git/refs/heads/' + input()
 with open(branch_name, 'r') as f:
     commit_hash = f.read()
 
@@ -56,3 +66,5 @@ commit_data = commit(commit_hash)
 
 tree_hash = commit_data[0].split()[1]
 tree(tree_hash)
+history_tree(commit_data[1].split()[1])
+

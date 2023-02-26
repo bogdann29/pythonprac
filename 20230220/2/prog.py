@@ -6,7 +6,7 @@ player_coords = [0, 0]
 
 def encounter(x, y):
     name, hello = monsters[(x, y)]
-    print(cowsay.cowsay(hello))
+    print(cowsay.cowsay(hello, cow=name))
 
 
 while s := input():
@@ -36,7 +36,7 @@ while s := input():
             continue
         x = int(x)
         y = int(y)
-        print(f'Added monster to {(x, y)} saying {hello}')
+        print(f'Added monster {name} to {(x, y)} saying {hello}')
         if (x, y) in monsters:
             print('Replaced the old monster')
         monsters[(x, y)] = (name, hello)

@@ -62,10 +62,10 @@ while s := input():
         if name not in cowsay.list_cows():
             print("Cannot add unknown monster")
             continue
-        print(f'Added monster {name} to {(x, y)} saying {hello}')
+        print(f'Added monster {name} to {(x, y)} with {hp} hp saying {hello}')
         if (x, y) in monsters:
             print('Replaced the old monster')
-        monsters[(x, y)] = (name, hello)
+        monsters[(x, y)] = (name, hello, hp)
 
     if mv == 1 and tuple(player_coords) in monsters:
         encounter(*player_coords)

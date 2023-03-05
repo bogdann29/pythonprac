@@ -1,5 +1,6 @@
 import cowsay
 from io import StringIO
+import shlex as sh
 
 monsters = {}
 player_coords = [0, 0]
@@ -32,7 +33,7 @@ def encounter(x, y):
 print('<<< Welcome to Python-MUD 0.1 >>>')
 
 while s := input():
-    inp = s.split()
+    inp = sh.split(s)
     mv = 0
     if inp[0] == 'up':
         player_coords[1] = (player_coords[1] - 1) % 10
@@ -51,13 +52,16 @@ while s := input():
         print(f'Moved to {tuple(player_coords)}')
         move = 1
     elif inp[0] == 'addmon':
-        x, y, name, *hello = inp[1:]
-        hello = ' '.join(hello)
-        if name not in cowsay.list_cows() + ["jgsbat"]:
+        if len(inp) != 9:
+            print("Unknown command")
+            continue
+        name = inp[1]
+        hello = inp[inp.index("hello") + 1]
+        hp = int(inp[inp.index("hp") + 1])
+        x, y = int(inp[inp.index("coords") + 1]), int(inp[inp.index("coords") + 2])
+        if name not in cowsay.list_cows():
             print("Cannot add unknown monster")
             continue
-        x = int(x)
-        y = int(y)
         print(f'Added monster {name} to {(x, y)} saying {hello}')
         if (x, y) in monsters:
             print('Replaced the old monster')

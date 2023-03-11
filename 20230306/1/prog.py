@@ -82,6 +82,26 @@ class cmdLine(cmd.Cmd):
         self.monsters[(x, y)] = (name, hello, hp)
 
 
+    def do_attack(self, args):
+        if tuple(self.player_coords) not in self.monsters:
+            print("No monster here")
+            return
+        name, hello, hp = self.monsters[tuple(self.player_coords)]
+        if hp <= 10:
+            damage = hp
+            hp = 0
+        else:
+            damage = 10
+            hp -= 10
+        print(f"Attacked {name}, damage {damage} hp")
+        if hp == 0:
+            print(f"{name} died")
+            self.monsters.pop(tuple(self.player_coords))
+        else:
+            print(f"{name} now has {hp}")
+            self.monsters[tuple(self.player_coords)] = (name, hello, hp)
+
+
     def do_EOF(self, args):
         'End command line'
         return 1

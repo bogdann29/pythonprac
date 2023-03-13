@@ -109,19 +109,30 @@ class cmdLine(cmd.Cmd):
 
 
     def do_attack(self, args):
+        
+        name = "monster"
         weapon = "sword"
+
         if args := sh.split(args):
-            if args[0].lower() == "with":
-                weapon = args[1]
-                if weapon not in WEAPONS:
+            match args:
+                case name, _, weapon:
+                    name = name
+                    weapon = weapon
+                case _, weapon:
+                    weapon = weapon
+                case name:
+                    name = name[0]
+        
+        if weapon not in WEAPONS:
                     print("Unknown weapon")
                     return 0
-            else:
-                print("Unknown command")
+        
+        if name not in cowsay.list_cows() + ["jgsbat"]:
+                print("Unknown monster")
                 return 0
-            
+        
         if tuple(self.player_coords) not in self.monsters:
-            print("No monster here")
+            print(f"No {name} here")
             return
         name, hello, hp = self.monsters[tuple(self.player_coords)]
         if hp <= WEAPONS[weapon]:

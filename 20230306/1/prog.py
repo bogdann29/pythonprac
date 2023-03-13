@@ -20,6 +20,31 @@ EOC
 """))
 
 
+WEAPONS = {
+    "sword": 10,
+    "spear": 15,
+    "axe": 20,
+}
+
+COMPLETE = {
+    "attack": {
+        "with": ["sword", "spear", "axe"],
+        "": cowsay.list_cows() + ["jgsbat"],
+    },
+}
+
+
+
+def complete(text, line, begidx, endidx):
+    args = sh.split(line)
+    if args == ["attack"] or not args[1].startswith("with"):
+        key, command = "", "attack"
+    elif begidx == endidx:
+        key, command = args[-1], 
+    else:
+        key, command = args[-2], args[0]
+    
+    return [s for s in COMPLETE[command][key] if s.startswith(text)]
 
 
 class cmdLine(cmd.Cmd):
@@ -42,6 +67,7 @@ class cmdLine(cmd.Cmd):
         print(f'Moved to {tuple(self.player_coords)}')
         if tuple(self.player_coords) in self.monsters:
             self.encounter(*self.player_coords)
+
 
     def do_down(self, args):
         self.player_coords[1] = (self.player_coords[1] + 1) % 10
@@ -83,16 +109,35 @@ class cmdLine(cmd.Cmd):
 
 
     def do_attack(self, args):
+        name = "monster"
+        if args := sh.split(args):
+            name = args[0]
+            if name not in cowsay.list_cows() + ["jgsbat"]:
+                print("Unknown monster")
+                return 0
+            
+        
+        weapon = "sword"
+        # if args := sh.split(args):
+        #     if args[0].lower() == "with":
+        #         weapon = args[1]
+        #         if weapon not in WEAPONS:
+        #             print("Unknown weapon")
+        #             return 0
+        #     else:
+        #         print("Unknown command")
+        #         return 0
+            
         if tuple(self.player_coords) not in self.monsters:
-            print("No monster here")
+            print(f"No {name} here")
             return
         name, hello, hp = self.monsters[tuple(self.player_coords)]
-        if hp <= 10:
+        if hp <= WEAPONS[weapon]:
             damage = hp
             hp = 0
         else:
-            damage = 10
-            hp -= 10
+            damage = WEAPONS[weapon]
+            hp -= WEAPONS[weapon]
         print(f"Attacked {name}, damage {damage} hp")
         if hp == 0:
             print(f"{name} died")
@@ -100,6 +145,11 @@ class cmdLine(cmd.Cmd):
         else:
             print(f"{name} now has {hp}")
             self.monsters[tuple(self.player_coords)] = (name, hello, hp)
+
+
+
+    def complete_attack(self, text, line, begidx, endidx):
+        return complete(text, line, begidx, endidx)
 
 
     def do_EOF(self, args):

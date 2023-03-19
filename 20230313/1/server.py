@@ -88,6 +88,49 @@ class Game:
 
         return "\n".join(msg)
 
+async def echo(reader, writer):
+    host, port = writer.get_extra_info("peername")
+    
+    player = Hero()
+    dungeon = Game(player)
+
+    while not reader.at_eof():
+        data = await reader.readline()
+        msg = shlex.split(data.decode().strip())
+        ans = ""
+        print(msg)
+        match msg:
+            case way if len(way) == 1 and way[0] in Game.ways:
+                ans = "\n".join(dungeon.change_hero_coords(way[0]))
+
+            case ["addmon", *args]:
+                print("Addmon")
+                if len(args) == 8:
+                    if args[0] in cowsay.list_cows() or args[0] == "jgsbat":
+                        ans = dungeon.add_monster(
+                            Monster(args[0],
+                                args[args.index("hello") + 1],
+                                int(args[args.index("hp") + 1]),
+                                int(args[args.index("coords") + 1]),
+                                int(args[args.index("coords") + 2]),
+                            )
+                        )
+
+            case ["attack", *args]:
+                print("Attack")
+                ans = dungeon.attack(player.x, player.y, args[0], int(args[1]))
+
+            case ["Connect"]:
+                ans = "<<< Welcome to Python-MUD 0.1 >>>"
+
+            case _:
+                ans = "Error"
+
+        writer.write(ans.encode())
+        await writer.drain()
+    writer.close()
+    await writer.wait_closed()
+
 
 async def main():
     server = await asyncio.start_server(echo, "0.0.0.0", 1337)

@@ -2,6 +2,7 @@ import cowsay
 from io import StringIO
 import shlex as sh
 import cmd
+import socket, sys
 
 new_monster = cowsay.read_dot_cow(StringIO("""
 $the_cow = <<EOC;
@@ -45,6 +46,20 @@ def complete(text, line, begidx, endidx):
         key, command = args[-2], args[0]
     
     return [s for s in COMPLETE[command][key] if s.startswith(text)]
+
+
+def send_recv_serv(msg):
+    s.send((msg + '\n').encode())
+    ans = s.recv(1024).decode().strip().replace("'", "")
+
+    if len(tmp := ans.split("\n")) == 3:
+        if tmp[1] == "jgsbat":
+            print(cowsay(tmp[1], cowfile=new_monster))
+        else:
+            print(cowsay(ans[1], cow=ans[2]))
+    else:
+        print(ans)
+
 
 
 class cmdLine(cmd.Cmd):
@@ -163,8 +178,15 @@ class cmdLine(cmd.Cmd):
         'End command line'
         return 1
 
-
-if __name__ == '__main__':
-    print('<<< Welcome to Python-MUD 0.1 >>>')
+def main():
+    print(s.recv(1024).decode().strip())
     cmdLine().cmdloop()
+
+
+if __name__ == "__main__":
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.connect((sys.argv[1], int(sys.argv[2]) if len(sys.argv) > 2 else 1337))
+        s.send("Connect\n".encode())
+        print('<<< Welcome to Python-MUD 0.1 >>>')
+        main()
 

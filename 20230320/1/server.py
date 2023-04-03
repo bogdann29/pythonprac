@@ -16,6 +16,40 @@ COMPLETE = {
     },
 }
 
+class Client:
+    client_list = {}
+
+    def __init__(self, name, host, port):
+        self.name = name
+        self.host = host
+        self.port = port
+        self.hero = None
+        self.writer = None
+        Client.client_list[name] = self
+
+    @staticmethod
+    def connect(name, host, port):
+        if name in Client.client_list:
+            return False
+
+        _ = Client(name, host, port)
+        return True
+
+    @staticmethod
+    def usr(name):
+        if name in Client.client_list:
+            return Client.client_list[name]
+
+    @staticmethod
+    def disconnect(name):
+        if Client.usr(name):
+            Client.client_list.pop(name)
+
+    def broadcast(self, msg):
+        for _, obj in filter(lambda u: u[0] != self.name, Client.client_list.items()):
+            obj.writer.write(msg)
+
+
 class Hero:
     def __init__(self, x = 0, y = 0) -> None:
         self.x = x
@@ -91,45 +125,70 @@ class Game:
 async def echo(reader, writer):
     host, port = writer.get_extra_info("peername")
     
-    player = Hero()
-    dungeon = Game(player)
+    data = await reader.readline()
+    user = data.decode().strip()
 
-    while not reader.at_eof():
-        data = await reader.readline()
-        msg = shlex.split(data.decode().strip())
-        ans = ""
-        print(msg)
-        match msg:
-            case way if len(way) == 1 and way[0] in Game.ways:
-                ans = "\n".join(dungeon.change_hero_coords(way[0]))
+    if not Client.connect(user, host, port):
+        writer.write(f"Login {user} is already taken.\n".encode())
+        print(f"Disconnect {host}:{port}")
+        writer.close()
+        await writer.wait_closed()
+    else:
+        client = Client.usr(user)
+        client.hero = Hero()
+        client.writer = writer
 
-            case ["addmon", *args]:
-                print("Addmon")
-                if len(args) == 8:
-                    if args[0] in cowsay.list_cows() or args[0] == "jgsbat":
-                        ans = dungeon.add_monster(
-                            Monster(args[0],
-                                args[args.index("hello") + 1],
-                                int(args[args.index("hp") + 1]),
-                                int(args[args.index("coords") + 1]),
-                                int(args[args.index("coords") + 2]),
+        writer.write(str(Client.usr(user)).encode())
+        client.broadcast((f"New user: {user}").encode())
+
+        dungeon = Game(client)
+
+        while not reader.at_eof():
+            data = await reader.readline()
+            msg = shlex.split(data.decode().strip())
+            ans = ""
+            print(msg)
+            match msg:
+                case way if len(way) == 1 and way[0] in Game.ways:
+                    ans = "\n".join(dungeon.change_hero_coords(way[0]))
+                    writer.write(ans.encode())
+                    await writer.drain()
+
+                case ["addmon", *args]:
+                    print("Addmon")
+                    if len(args) == 8:
+                        if args[0] in cowsay.list_cows() or args[0] == "jgsbat":
+                            ans = dungeon.add_monster(
+                                Monster(args[0],
+                                    args[args.index("hello") + 1],
+                                    int(args[args.index("hp") + 1]),
+                                    int(args[args.index("coords") + 1]),
+                                    int(args[args.index("coords") + 2]),
+                                )
                             )
-                        )
 
-            case ["attack", *args]:
-                print("Attack")
-                ans = dungeon.attack(player.x, player.y, args[0], int(args[1]))
+                case ["attack", *args]:
+                    print("Attack")
+                    ans = dungeon.attack(client.hero.x, client.hero.y, args[0], int(args[1]))
+                    print(ans)
+                    if ans[1]:
+                        client.broadcast((client.name + ": " + ans[0]).encode())
+                    else:
+                        writer.write(ans[0].encode())
+                        await writer.drain()
 
-            case ["Connect"]:
-                ans = "<<< Welcome to Python-MUD 0.1 >>>"
+                case ["quit"]:
+                    break
 
-            case _:
-                ans = "Error"
+                case _:
+                    ans = "Error"
 
-        writer.write(ans.encode())
-        await writer.drain()
-    writer.close()
-    await writer.wait_closed()
+        
+        client.broadcast((f"Dissconnect: {client.name}").encode())
+        writer.write("Goodbye".encode())
+        Client.disconnect(user)
+        writer.close()
+        await writer.wait_closed()
 
 
 async def main():

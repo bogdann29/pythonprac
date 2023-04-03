@@ -3,6 +3,9 @@ from io import StringIO
 import shlex as sh
 import cmd
 import socket, sys
+import threading
+import readline
+
 
 new_monster = cowsay.read_dot_cow(StringIO("""
 $the_cow = <<EOC;
@@ -29,36 +32,20 @@ WEAPONS = {
 
 
 
-def send_recv_serv(msg):
-    s.send((msg + '\n').encode())
-    ans = s.recv(1024).decode().strip().replace("'", "")
-
-    if len(tmp := ans.split("\n")) == 3:
-        if tmp[1] == "jgsbat":
-            print(cowsay(tmp[1], cowfile=new_monster))
-        else:
-            print(cowsay(ans[1], cow=ans[2]))
-    else:
-        print(ans)
-
-
 
 class cmdLine(cmd.Cmd):
 
     def do_up(self, args):
-        send_recv_serv("up")
-
+        s.send(("up\n").encode())
 
     def do_down(self, args):
-        send_recv_serv("down")
-
+        s.send(("down\n").encode())
 
     def do_left(self, args):
-        send_recv_serv("left")
+        s.send(("left\n").encode())
 
-    
     def do_right(self, args):
-        send_recv_serv("right")
+        s.send(("right\n").encode())
 
 
     def do_addmon(self, args):
@@ -66,17 +53,11 @@ class cmdLine(cmd.Cmd):
         if len(args) != 8:
             print("Unknown command")
             return
-        name = args[0]
-        hello = args[args.index("hello") + 1]
-        hp = int(args[args.index("hp") + 1])
-        x, y = int(args[args.index("coords") + 1]), int(args[args.index("coords") + 2])
-        if name not in cowsay.list_cows():
+        if args[0] not in cowsay.list_cows():
             print("Cannot add unknown monster")
             return
-        print(f'Added monster {name} to {(x, y)} with {hp} hp saying {hello}')
-        if (x, y) in self.monsters:
-            print('Replaced the old monster')
-        self.monsters[(x, y)] = (name, hello, hp)
+        msg = 'addmon ' + sh.join(args)
+        s.send((msg.strip() + '\n').encode)
 
 
     def do_attack(self, args):
@@ -94,20 +75,39 @@ class cmdLine(cmd.Cmd):
             case _:
                 print("Invalid arguments")
                 return
-        send_recv_serv(" ".join(["attack", nm, str(WEAPONS[wpn])]))
+        s.send((" ".join(["attack", nm, str(WEAPONS[wpn])]) + "\n").encode())
         
 
     def do_EOF(self, args):
         'End command line'
         return 1
     
+    def do_quit(self, args):
+        s.send("quit\n".encode())
+        self.onecmd("exit")
 
     def do_exit(self, args):
         'End command line'
         return 1
 
+
+def get_response():
+    while True:
+        ans = s.recv(2048).decode()
+        if ans:
+            if ans.strip() == "Goodbye":
+                break
+
+            print("\n" + ans + "\n")
+            print(f"\n{cmdline.prompt}{readline.get_line_buffer()}", end="", flush=True)
+            
+
 def main():
     print(s.recv(1024).decode().strip())
+    global cmdline
+    cmdline = cmdLine()
+    game = threading.Thread(target=get_response, args=())
+    game.start()
     cmdLine().cmdloop()
 
 

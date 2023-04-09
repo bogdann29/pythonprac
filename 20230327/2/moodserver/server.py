@@ -16,6 +16,7 @@ COMPLETE = {
     },
 }
 
+
 class Client:
     client_list = {}
 
@@ -51,9 +52,10 @@ class Client:
 
 
 class Hero:
-    def __init__(self, x = 0, y = 0) -> None:
+    def __init__(self, x=0, y=0) -> None:
         self.x = x
         self.y = y
+
 
 class Monster:
     def __init__(self, name, hello_string, hp, x, y):
@@ -62,6 +64,7 @@ class Monster:
         self.hp = hp
         self.x = x
         self.y = y
+
 
 class Game:
     ways = {
@@ -122,9 +125,10 @@ class Game:
 
         return "\n".join(msg)
 
+
 async def echo(reader, writer):
     host, port = writer.get_extra_info("peername")
-    
+
     data = await reader.readline()
     user = data.decode().strip()
 
@@ -164,7 +168,7 @@ async def echo(reader, writer):
                                     int(args[args.index("hp") + 1]),
                                     int(args[args.index("coords") + 1]),
                                     int(args[args.index("coords") + 2]),
-                                )
+                                        )
                             )
 
                 case ["attack", *args]:
@@ -176,7 +180,7 @@ async def echo(reader, writer):
                     else:
                         writer.write(ans[0].encode())
                         await writer.drain()
-                
+
                 case ["sayall", *text]:
                     client.broadcast((client.name + ": " + " ".join(text).strip()).encode())
 
@@ -186,7 +190,6 @@ async def echo(reader, writer):
                 case _:
                     ans = "Error"
 
-        
         client.broadcast((f"Dissconnect: {client.name}").encode())
         writer.write("Goodbye".encode())
         Client.disconnect(user)

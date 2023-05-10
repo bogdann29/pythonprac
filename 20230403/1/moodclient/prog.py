@@ -34,17 +34,21 @@ WEAPONS = {
 
 class cmdLine(cmd.Cmd):
 
+    def __init__(self, socket):
+        super().__init__()
+        self.s = socket
+
     def do_up(self, args):
-        s.send(("up\n").encode())
+        self.s.send(("up\n").encode())
 
     def do_down(self, args):
-        s.send(("down\n").encode())
+        self.s.send(("down\n").encode())
 
     def do_left(self, args):
-        s.send(("left\n").encode())
+        self.s.send(("left\n").encode())
 
     def do_right(self, args):
-        s.send(("right\n").encode())
+        self.s.send(("right\n").encode())
 
     def do_addmon(self, args):
         args = sh.split(args)
@@ -55,7 +59,7 @@ class cmdLine(cmd.Cmd):
             print("Cannot add unknown monster")
             return
         msg = 'addmon ' + sh.join(args)
-        s.send((msg.strip() + '\n').encode)
+        self.s.send((msg.strip() + '\n').encode)
 
     def do_attack(self, args):
         nm = None
@@ -72,18 +76,18 @@ class cmdLine(cmd.Cmd):
             case _:
                 print("Invalid arguments")
                 return
-        s.send((" ".join(["attack", nm, str(WEAPONS[wpn])]) + "\n").encode())
+        self.s.send((" ".join(["attack", nm, str(WEAPONS[wpn])]) + "\n").encode())
 
     def do_sayall(self, args):
         message = "sayall " + args + '\n'
-        s.send(message.encode())
+        self.s.send(message.encode())
 
     def do_EOF(self, args):
         'End command line'
         return 1
 
     def do_quit(self, args):
-        s.send("quit\n".encode())
+        self.s.send("quit\n".encode())
         self.onecmd("exit")
 
     def do_exit(self, args):
@@ -91,7 +95,7 @@ class cmdLine(cmd.Cmd):
         return 1
 
 
-def get_response():
+def get_response(s):
     while True:
         ans = s.recv(2048).decode()
         if ans:
@@ -102,18 +106,18 @@ def get_response():
             print(f"\n{cmdline.prompt}{readline.get_line_buffer()}", end="", flush=True)
 
 
-def main():
+def game(s):
     print(s.recv(1024).decode().strip())
     global cmdline
-    cmdline = cmdLine()
-    game = threading.Thread(target=get_response, args=())
+    cmdline = cmdLine(s)
+    game = threading.Thread(target=get_response, args=(s,))
     game.start()
-    cmdLine().cmdloop()
+    cmdLine(s).cmdloop()
 
 
-if __name__ == "__main__":
+def main():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect(("localhost", 1337))
         s.send(f"{sys.argv[1]}\n".encode())
         print('<<< Welcome to Python-MUD 0.1 >>>')
-        main()
+        game(s)

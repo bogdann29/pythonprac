@@ -21,9 +21,19 @@ COMPLETE = {
 
 
 class Client:
+    """
+    Player in a multiplayer game. Each client has a name, host, port, hero object, and writer
+    object for sending messages to other clients.
+
+    Attributes:
+        client_list: (dict) A class-level dictionary mapping client names to client objects.
+    """
     client_list = {}
 
     def __init__(self, name: str, host: int, port: int) -> None:
+        """
+        Initializes a new client and adds the client to the client list.
+        """
         self.name = name
         self.host = host
         self.port = port
@@ -33,6 +43,9 @@ class Client:
 
     @staticmethod
     def connect(name: str, host: int, port: int) -> bool:
+        """
+        Static method that creates a new client and adds it to the client list with the given name and address.
+        """
         if name in Client.client_list:
             return False
 
@@ -46,6 +59,9 @@ class Client:
 
     @staticmethod
     def disconnect(name: str) -> None:
+        """
+        Static method that removes the client with the given name from the client list.
+        """
         if Client.usr(name):
             Client.client_list.pop(name)
 
@@ -61,8 +77,23 @@ class Hero:
 
 
 class Monster:
+    """
+    Enemy character in a multiplayer game.
+
+    Attributes:
+        monsters: (dict) - A class-level dictionary mapping monsters names to monsters objects.
+    """
     monsters = {}
     def __init__(self, name: str, hello_string : str, hp : int, x : int, y : int):
+        """
+        Initializes a new monster with the given name, greeting message, hitpoints, and coordinates.
+
+        :param name: The name of the monster.
+        :param hello_string: The greeting string that the monster outputs.
+        :param hp: (int) The hitpoints of the monster.
+        :param x: (int) first coordinate
+        :param y: (int) second coordinate
+        """
         self.name = name
         self.message = hello_string
         self.hp = hp
@@ -72,6 +103,15 @@ class Monster:
 
 
 class Game:
+    """
+    Game class for MOOD.
+
+    Attributes:
+        ways (dict): dictionary of possible directions
+        dungeon (2d list): game field
+
+    """
+
     ways = {
         "up": (0, 1),
         "down": (0, -1),
@@ -85,6 +125,9 @@ class Game:
         self.hero = hero
 
     def addmon(self, monster : Optional[Monster]) -> str:
+        """
+        Adds monster to the game field
+        """
         ret_msg = f'Added monster {monster.name} to ({monster.x}, {monster.y}) saying {monster.message}'
         if Game.dungeon[monster.x][monster.y]:
             Monster.monsters.pop(Game.dungeon[monster.x][monster.y].name)
@@ -94,9 +137,15 @@ class Game:
         return ret_msg
 
     def encounter(self, x: int, y: int) -> list:
+        """
+        Checks if there is a monster in this point and returns monster message and name
+        """
         return Game.dungeon[x][y].message, Game.dungeon[x][y].name
 
     def change_hero_coords(self, way: str) -> str:
+        """
+        Changes hero's position on the field
+        """
         x, y = Game.ways[way]
         self.hero.hero.x = (self.hero.hero.x + x) % 10
         self.hero.hero.y = (self.hero.hero.y + y) % 10
@@ -108,6 +157,9 @@ class Game:
         return msg
 
     def attack(self, x: int, y: int, name: str, dmg : int):
+        """
+        Carries out an attack on a monster at a specific location
+        """
         msg = ["No monster here"]
         flag = False
         if isinstance(Game.dungeon[x][y], Monster):
@@ -135,6 +187,11 @@ class Game:
 
 
 def monster_moving(delay : int = 30) -> None:
+    """
+    Replace random monster every <delay> seconds.
+    :param delay: (int) frequency of monster replacing
+    
+    """
 
     dang = Game(None)
     monsters = Monster.monsters
